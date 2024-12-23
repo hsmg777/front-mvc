@@ -1,4 +1,4 @@
-CORE Restaurante (React + Flask )
+CORE  (React + Flask )
 
 Este proyecto "MVC" fue desarrollado de la siguiente manera:
 
