@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import './styles/Core.css';
+import { buscarGastos } from './ComandPattern';
 
 const Core = () => {
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
     const [resultados, setResultados] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const handleSearch = async () => {
         if (!fechaInicio || !fechaFin) {
@@ -19,22 +21,12 @@ const Core = () => {
         }
 
         setLoading(true);
+        setError("");
         try {
-            const response = await fetch("https://api-web-latest-nbk1.onrender.com//gastos/filtrar", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    fechaInicio: fechaInicio,
-                    fechaFin: fechaFin,
-                }),
-            });
-
-            if (!response.ok) throw new Error("Error al obtener datos");
-            const data = await response.json();
+            const data = await buscarGastos(fechaInicio, fechaFin);
             setResultados(data);
         } catch (error) {
+            setError("Ocurrió un error al realizar la consulta. Inténtalo nuevamente.");
             console.error("Error al realizar la consulta:", error);
         } finally {
             setLoading(false);
@@ -65,8 +57,12 @@ const Core = () => {
                     </button>
                 </div>
 
+                {error && <p className="error-message">{error}</p>}
+
                 <div className="resultados">
-                    {resultados.length > 0 ? (
+                    {loading ? (
+                        <p>Cargando resultados...</p>
+                    ) : resultados.length > 0 ? (
                         <table className="tabla-resultados">
                             <thead>
                                 <tr>
